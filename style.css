@@ -20,6 +20,8 @@ body {
   /* 👉 앱 느낌 */
   box-shadow: 0 0 20px rgba(0,0,0,0.1);
   border-radius: 20px;
+
+  overflow: hidden;
 }
 
 /* 상단 */
