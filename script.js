@@ -1,19 +1,30 @@
 const data = {
   phone: "01012345678",
-  status: "missing" // 기본 상태
+  centerPhone: "021234567", // 등록 센터 번호 추가
+  status: "missing" 
 };
 
 const callBtn = document.getElementById("callBtn");
+const centerBtn = document.querySelector(".btn.orange");
 const statusText = document.getElementById("statusText");
 const toggle = document.getElementById("toggle");
 
-// 📞 전화 연결
-callBtn.href = `tel:${data.phone}`;
+//전화 연결
+if (callBtn) {
+  callBtn.href = `tel:${data.phone}`;
+}
 
-// 🔄 상태 반영 함수
+// 센터 연결
+if (centerBtn) {
+  centerBtn.href = `tel:${data.centerPhone}`;
+}
+
 function updateUI() {
+  // index.html에만 있는 요소
+  if (!statusText || !toggle) return;
+
   if (data.status === "missing") {
-    statusText.innerText = "🔴 현재, 실종 신고가 접수된 어르신입니다.";
+    statusText.innerHTML = `<span class="dot">●</span> 현재, 실종 신고가 접수된 어르신입니다.`;
     statusText.style.display = "inline";
     toggle.classList.add("active");
   } else {
@@ -22,16 +33,11 @@ function updateUI() {
   }
 }
 
-// 👉 초기 상태 적용
 updateUI();
 
-// 🔥 👉 클릭하면 상태 변경
-toggle.addEventListener("click", () => {
-  if (data.status === "missing") {
-    data.status = "normal";
-  } else {
-    data.status = "missing";
-  }
-
-  updateUI();
-});
+if (toggle) {
+  toggle.addEventListener("click", () => {
+    data.status = (data.status === "missing") ? "normal" : "missing";
+    updateUI();
+  });
+}
