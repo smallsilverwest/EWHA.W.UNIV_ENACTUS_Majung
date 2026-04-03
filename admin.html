@@ -9,42 +9,40 @@
 <body class="bg-gray-100 flex justify-center font-sans">
 
     <div id="login-section" class="w-full max-w-md min-h-screen bg-white flex flex-col relative">
-        
         <div class="p-6 border-b flex items-center bg-white sticky top-0 z-10">
-            <button onclick="location.href='home.html'" class="mr-4 text-xl text-gray-800 hover:text-blue-600 transition-colors">←</button>
+            <button onclick="location.href='home.html'" class="mr-4 text-xl text-gray-800">←</button>
             <h1 class="font-bold text-lg text-gray-800">보호자 인증</h1>
         </div>
-
         <div class="flex-1 p-12 flex flex-col justify-center">
             <h1 class="text-3xl font-black mb-2 text-gray-800">인증</h1>
             <p class="text-gray-400 mb-10 text-sm font-medium">관리자 전용 PIN 번호를 입력하세요.</p>
-            
             <input id="pin-input" type="password" maxlength="4" placeholder="••••" 
-                class="border-b-4 border-blue-600 text-5xl py-4 mb-12 outline-none tracking-[1rem] text-center font-mono focus:border-blue-400 transition-all">
-            
-            <button onclick="checkPin()" class="bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl font-bold text-lg shadow-xl transition-all active:scale-95">
+                class="border-b-4 border-blue-600 text-5xl py-4 mb-12 outline-none text-center font-mono">
+            <button onclick="checkPin()" class="bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl active:scale-95 transition-all">
                 로그인
             </button>
         </div>
     </div>
 
-    <div id="admin-section" class="hidden w-full max-w-md min-h-screen bg-white">
+    <div id="admin-section" class="hidden w-full max-w-md min-h-screen bg-white flex flex-col">
         <div class="p-6 border-b flex items-center bg-white sticky top-0 z-10">
             <button onclick="location.reload()" class="mr-4 text-xl">←</button>
             <h1 class="font-bold text-lg">보호자 관리 화면</h1>
         </div>
         
-        <div class="p-8">
+        <div class="p-8 flex-1">
             <div class="bg-slate-50 p-8 rounded-3xl border border-slate-100 mb-10 text-center">
-                <p class="text-xs text-gray-400 font-bold uppercase mb-3 tracking-wider">현재 상태</p>
-                <p id="current-status" class="text-3xl font-black text-blue-600 tracking-tighter">정상</p>
+                <p class="text-xs text-gray-400 font-bold uppercase mb-3 tracking-wider">현재 시스템 상태</p>
+                <p id="current-status" class="text-3xl font-black tracking-tighter">불러오는 중...</p>
             </div>
             
-            <button id="toggle-btn" class="w-full py-6 rounded-2xl font-black text-xl shadow-lg transition-all transform active:scale-95"></button>
+            <button id="toggle-btn" class="w-full py-6 rounded-2xl font-black text-xl shadow-lg transition-all transform active:scale-95">
+                상태 변경 중...
+            </button>
             
             <p class="mt-6 text-center text-xs text-gray-400 leading-relaxed px-4">
-                버튼을 누르면 즉시 시스템 상태가 업데이트되며,<br>
-                안심밴드 스캔 시 표시되는 화면이 바뀝니다.
+                버튼을 누르면 Firebase 데이터베이스의<br>
+                isMissing 값이 즉시 업데이트됩니다.
             </p>
         </div>
     </div>
@@ -67,38 +65,39 @@
         const db = getFirestore(app);
         const elderRef = doc(db, "elders", "elder01");
 
-        // PIN 확인 함수
+        // 1. PIN 확인 후 입장
         window.checkPin = async () => {
             const input = document.getElementById('pin-input').value;
             const docSnap = await getDoc(elderRef);
-            if (docSnap.data().pin === input) {
+            if (docSnap.exists() && docSnap.data().pin === input) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('admin-section').classList.remove('hidden');
             } else {
-                alert("PIN 번호가 일치하지 않습니다.");
-                document.getElementById('pin-input').value = "";
+                alert("PIN 번호가 틀렸습니다.");
             }
         };
 
-        // 실시간 상태 감시
+        // 2. 실시간 데이터베이스 감시 및 버튼 기능 연결
         onSnapshot(elderRef, (docSnap) => {
             if (docSnap.exists()) {
                 const isMissing = docSnap.data().isMissing;
                 const statusText = document.getElementById('current-status');
                 const btn = document.getElementById('toggle-btn');
 
-                if (isMissing) {
-                    statusText.innerText = "실종 신고 중";
+                if (isMissing === true) {
+                    statusText.innerText = "🚨 실종 신고 중";
                     statusText.className = "text-3xl font-black text-red-600 tracking-tighter";
                     btn.innerText = "신고 해제하기";
-                    btn.className = "w-full py-6 rounded-2xl font-black text-xl text-white bg-blue-600 shadow-lg shadow-blue-100";
-                    btn.onclick = () => updateDoc(elderRef, { isMissing: false });
+                    btn.className = "w-full py-6 rounded-2xl font-black text-xl text-white bg-blue-600 shadow-blue-100";
+                    // 클릭 시 false로 변경
+                    btn.onclick = async () => { await updateDoc(elderRef, { isMissing: false }); };
                 } else {
-                    statusText.innerText = "정상 상태";
+                    statusText.innerText = "✅ 정상 상태";
                     statusText.className = "text-3xl font-black text-blue-600 tracking-tighter";
                     btn.innerText = "실종 신고 등록하기";
-                    btn.className = "w-full py-6 rounded-2xl font-black text-xl text-white bg-red-600 shadow-lg shadow-red-100";
-                    btn.onclick = () => updateDoc(elderRef, { isMissing: true });
+                    btn.className = "w-full py-6 rounded-2xl font-black text-xl text-white bg-red-600 shadow-red-100";
+                    // 클릭 시 true로 변경
+                    btn.onclick = async () => { await updateDoc(elderRef, { isMissing: true }); };
                 }
             }
         });
