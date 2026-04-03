@@ -3,35 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마중 - 관리자</title>
+    <title>마중 - 보호자 관리</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 flex justify-center">
-    <div id="login-section" class="w-full max-w-md min-h-screen bg-white p-10 flex flex-col justify-center">
-        <h1 class="text-2xl font-bold mb-6">보호자 인증</h1>
-        <input id="pin-input" type="password" placeholder="PIN 번호 4자리" class="border-b-2 border-blue-600 text-2xl py-2 mb-8 outline-none tracking-widest text-center">
-        <button onclick="checkPin()" class="bg-blue-600 text-white py-4 rounded-2xl font-bold">로그인</button>
+<body class="bg-gray-100 flex justify-center">
+    <div id="login-section" class="w-full max-w-md min-h-screen bg-white p-12 flex flex-col justify-center">
+        <h1 class="text-3xl font-black mb-2 text-gray-800">인증</h1>
+        <p class="text-gray-400 mb-10 text-sm font-medium">관리자 전용 PIN 번호를 입력하세요.</p>
+        <input id="pin-input" type="password" maxlength="4" placeholder="••••" class="border-b-4 border-blue-600 text-5xl py-4 mb-12 outline-none tracking-[1rem] text-center font-mono">
+        <button onclick="checkPin()" class="bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl font-bold text-lg shadow-xl transition-all">로그인</button>
     </div>
 
-    <div id="admin-section" class="hidden w-full max-w-md min-h-screen bg-white p-6">
-        <h1 class="text-xl font-bold mb-8">보호자 관리 모드</h1>
-        <div class="bg-gray-50 p-6 rounded-3xl border mb-6">
-            <p class="text-sm text-gray-500 mb-2">현재 상태</p>
-            <p id="current-status" class="text-2xl font-bold text-blue-600">정상</p>
+    <div id="admin-section" class="hidden w-full max-w-md min-h-screen bg-white">
+        <div class="p-6 border-b flex items-center bg-white sticky top-0 z-10">
+            <button onclick="location.reload()" class="mr-4">←</button>
+            <h1 class="font-bold text-lg">보호자 관리 화면</h1>
         </div>
-        <button id="toggle-btn" class="w-full py-5 rounded-2xl font-bold text-white mb-4"></button>
+        <div class="p-8">
+            <div class="bg-slate-50 p-8 rounded-3xl border border-slate-100 mb-10 text-center">
+                <p class="text-xs text-gray-400 font-bold uppercase mb-3">현재 상태</p>
+                <p id="current-status" class="text-3xl font-black text-blue-600 tracking-tighter">정상</p>
+            </div>
+            
+            <button id="toggle-btn" class="w-full py-6 rounded-2xl font-black text-xl shadow-lg transition-all transform active:scale-95"></button>
+            <p class="mt-6 text-center text-xs text-gray-400 leading-relaxed">버튼을 누르면 즉시 시스템 상태가 업데이트되며,<br>안심밴드 스캔 시 표시되는 화면이 바뀝니다.</p>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { /* 본인의 Config 복사 */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBphUEAQmK1XXYnNcQYK5NEOFDfxleNaAQ",
+            authDomain: "majung-260402v1.firebaseapp.com",
+            projectId: "majung-260402v1",
+            storageBucket: "majung-260402v1.firebasestorage.app",
+            messagingSenderId: "18043440169",
+            appId: "1:18043440169:web:f5f131e3fa0426ef126038",
+            measurementId: "G-4CHSF7NFGR"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const elderRef = doc(db, "elders", "elder01");
 
-        // PIN 확인 함수 (간단하게 구현)
         window.checkPin = async () => {
             const input = document.getElementById('pin-input').value;
             const docSnap = await getDoc(elderRef);
@@ -39,27 +55,27 @@
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('admin-section').classList.remove('hidden');
             } else {
-                alert("PIN 번호가 틀렸습니다.");
+                alert("PIN 번호가 일치하지 않습니다.");
+                document.getElementById('pin-input').value = "";
             }
         };
 
-        // 실시간 상태 업데이트 및 버튼 기능
-        onSnapshot(elderRef, (doc) => {
-            const isMissing = doc.data().isMissing;
+        onSnapshot(elderRef, (docSnap) => {
+            const isMissing = docSnap.data().isMissing;
             const statusText = document.getElementById('current-status');
             const btn = document.getElementById('toggle-btn');
 
             if (isMissing) {
                 statusText.innerText = "실종 신고 중";
-                statusText.className = "text-2xl font-bold text-red-600";
-                btn.innerText = "실종 신고 해제하기";
-                btn.className = "w-full py-5 rounded-2xl font-bold text-white bg-blue-600";
+                statusText.className = "text-3xl font-black text-red-600";
+                btn.innerText = "신고 해제하기";
+                btn.className = "w-full py-6 rounded-2xl font-black text-xl text-white bg-blue-600 shadow-blue-200";
                 btn.onclick = () => updateDoc(elderRef, { isMissing: false });
             } else {
-                statusText.innerText = "정상";
-                statusText.className = "text-2xl font-bold text-blue-600";
+                statusText.innerText = "정상 상태";
+                statusText.className = "text-3xl font-black text-blue-600";
                 btn.innerText = "실종 신고 등록하기";
-                btn.className = "w-full py-5 rounded-2xl font-bold text-white bg-red-600";
+                btn.className = "w-full py-6 rounded-2xl font-black text-xl text-white bg-red-600 shadow-red-200";
                 btn.onclick = () => updateDoc(elderRef, { isMissing: true });
             }
         });
