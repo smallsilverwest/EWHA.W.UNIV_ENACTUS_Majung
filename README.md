@@ -1,5 +1,5 @@
 # Majoon NFC Websites
 
-- File name start xx means 'unused'.
+- File name start 'xx' means 'unused'.
 
-- Please fork this repo and delete the files with xxx.
+- Please fork this repo and delete the files with 'xx'.
