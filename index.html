@@ -8,53 +8,36 @@
     <style>
         .hidden { display: none !important; }
         .transition-all { transition: all 0.4s ease-in-out; }
+        #status-main-text { min-height: 3.5rem; }
     </style>
 </head>
 <body class="bg-gray-100 flex justify-center text-gray-800 font-sans">
     <div class="w-full max-w-md min-h-screen bg-white shadow-lg flex flex-col relative overflow-hidden">
-
         <div class="relative w-full border-b flex justify-between items-center px-6 py-4 bg-white sticky top-0 z-50">
             <h1 id="header-title" class="text-lg font-bold text-gray-900 transition-all">마중안심밴드</h1>
-            
-            <button onclick="location.href='admin.html'" class="text-gray-400 text-sm hover:text-gray-600 transition-colors font-medium">
-                보호자 관리
-            </button>
+            <button id="btn-admin-login" class="bg-gray-100 px-3 py-1 rounded-lg text-gray-600 text-sm font-bold active:scale-95">보호자 관리</button>
         </div>
 
-        <div class="p-6 pt-10 flex flex-col items-center flex-1">
-            
-            <div id="status-card" class="w-full mb-4 text-center rounded-[2.5rem] p-10 transition-all border shadow-sm bg-white">
-                <div id="status-emoji" class="text-6xl mb-4 transition-all">🏠</div>
-                
-                <h2 id="status-main-text" class="text-2xl font-black mb-2 leading-tight tracking-tight transition-all text-gray-900">
-                    불러오는 중...
-                </h2>
-                <p id="status-sub-text" class="text-sm font-medium transition-all text-gray-500">
-                    -
-                </p>
+        <div class="p-6 pt-8 flex flex-col items-center flex-1">
+            <div id="status-card" class="w-full mb-6 text-center rounded-[2.5rem] p-10 transition-all border-2 border-gray-200 bg-white shadow-sm">
+                <div id="status-emoji" class="text-6xl mb-4 transition-all opacity-0">⌛</div>
+                <h2 id="status-main-text" class="text-2xl font-black mb-2 leading-tight tracking-tight transition-all text-gray-900">불러오는 중...</h2>
+                <p id="status-sub-text" class="text-sm font-medium transition-all text-gray-500"> </p>
             </div>
 
-            <div class="w-full mt-auto px-1">
-                <div id="call-guide-text" class="flex items-center mb-5 text-[13px] font-bold transition-all text-blue-600">
+            <div class="w-full px-1">
+                <div id="call-guide-text" class="flex items-center mb-4 text-[15px] font-bold transition-all text-black">
                     <span class="mr-2 text-base">📞</span> 아래 버튼을 누르면 바로 전화가 연결됩니다.
                 </div>
-                
                 <div class="grid grid-cols-3 gap-3 mb-6 font-black text-white">
-                    <a id="call-guardian" href="#" class="bg-blue-600 text-center py-5 rounded-3xl shadow-lg flex flex-col items-center justify-center active:scale-95 transition-all">
-                        <span class="text-lg font-black leading-tight">
-                            보호자<br>연결
-                        </span>
+                    <a id="call-guardian" href="#" class="bg-red-600 text-center py-5 rounded-3xl shadow-lg flex flex-col items-center justify-center active:scale-95 transition-all">
+                        <span class="text-lg leading-tight">보호자<br>연결</span>
                     </a>
-                    
                     <a href="tel:182" class="bg-orange-500 text-center py-5 rounded-3xl shadow-lg flex flex-col items-center active:scale-95 transition-all">
-                        <span class="text-lg font-black leading-tight">
-                            실종<br>신고
-                        </span>
+                        <span class="text-lg leading-tight">실종<br>신고</span>
                     </a>
-                    <a href="tel:112" class="bg-red-600 text-center py-5 rounded-3xl shadow-lg flex flex-col items-center active:scale-95 transition-all">
-                        <span class="text-lg font-black leading-tight">
-                            경찰<br>연결
-                        </span>
+                    <a href="tel:112" class="bg-blue-600 text-center py-5 rounded-3xl shadow-lg flex flex-col items-center active:scale-95 transition-all">
+                        <span class="text-lg leading-tight">경찰<br>연결</span>
                     </a>
                 </div>
 
@@ -62,78 +45,68 @@
                     <p class="text-base font-black text-gray-900 mb-2">이렇게 말씀해 주세요!</p>
                     <p class="text-[14px] text-gray-700 leading-relaxed font-medium">
                         "안심밴드를 통해 연락드립니다.<br>
-                        <span id="location-highlight" class="text-blue-600 font-bold transition-all">OOO 장소</span>에서 어르신을 발견했습니다."
+                        <span id="location-highlight" class="text-red-600 font-bold transition-all">실제 위치</span>에서 어르신을 발견했습니다."
                     </p>
                 </div>
 
-                <button id="btn-info" class="w-full bg-white text-blue-600 py-5 rounded-[1.5rem] font-black text-lg border-[2.5px] border-blue-600 shadow-sm mb-6 active:scale-95 transition-all">
+                <button id="btn-info" class="w-full bg-white text-orange-600 py-5 rounded-[1.5rem] font-black text-lg border-[2.5px] border-orange-600 shadow-sm mb-6 active:scale-95 transition-all">
                     어르신 정보 확인하기
                 </button>
             </div>
         </div>
 
         <footer class="p-8 bg-white border-t text-center text-gray-400">
-            <div class="flex justify-center gap-3 text-[10px] mb-4">
-                <span>1:1 문의하기</span><span class="text-gray-200">|</span><span>소개</span><span class="text-gray-200">|</span><span>이용약관</span><span class="text-gray-200">|</span><span>개인정보처리방침</span>
-            </div>
-            <p class="text-[9px]">Copyright © MAJUNG. All rights reserved.</p>
+            <p class="text-[13px]">Copyright © MAJUNG. All rights reserved.</p>
         </footer>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+        import { getFirestore, doc, onSnapshot, updateDoc, GeoPoint } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
         const firebaseConfig = {
-            apiKey: "AIzaSyBphUEAQmK1XXYnNcQYK5NEOFDfxleNaAQ",
-            authDomain: "majung-260402v1.firebaseapp.com",
-            projectId: "majung-260402v1",
-            storageBucket: "majung-260402v1.firebasestorage.app",
-            messagingSenderId: "18043440169",
-            appId: "1:18043440169:web:f5f131e3fa0426ef126038",
-            measurementId: "G-4CHSF7NFGR"
+          apiKey: "AIzaSyARCEpqFrnnCg6bbDzC7etXK_Ypnyc_1yY",
+          authDomain: "safeloop-majung.firebaseapp.com",
+          projectId: "safeloop-majung",
+          storageBucket: "safeloop-majung.firebasestorage.app",
+          messagingSenderId: "1031230129161",
+          appId: "1:1031230129161:web:5d164644d2a9857f5aa4d8"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const urlParams = new URLSearchParams(window.location.search);
-        const elderId = urlParams.get('id') || "elder01";
+        const elderId = urlParams.get('id') || "demo"; 
+        const docRef = doc(db, "Users", elderId);
 
-        onSnapshot(doc(db, "elders", elderId), (docSnap) => {
+        // 보호자 관리 이동
+        document.getElementById('btn-admin-login').onclick = () => location.href = `login.html?id=${elderId}`;
+
+        // 위치 트래킹
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                await updateDoc(docRef, { updateLoc: new GeoPoint(pos.coords.latitude, pos.coords.longitude), updateTime: new Date() });
+            }, null, { enableHighAccuracy: true });
+        }
+
+        // 실시간 상태 감시
+        onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 const isMissing = data.isMissing;
-                
-                const headerTitle = document.getElementById('header-title');
-                const card = document.getElementById('status-card');
                 const emoji = document.getElementById('status-emoji');
                 const mainText = document.getElementById('status-main-text');
-                const subText = document.getElementById('status-sub-text');
-                const guideText = document.getElementById('call-guide-text');
-                const locHighlight = document.getElementById('location-highlight');
-
-                if (isMissing) {
-                    headerTitle.className = "text-lg font-bold text-red-600 transition-all";
-                    card.className = "w-full mb-10 text-center rounded-[2.5rem] p-10 transition-all border-2 border-red-200 bg-red-50 shadow-md";
-                    emoji.innerText = "🚨";
-                    mainText.innerHTML = "현재 실종 신고가<br>등록된 어르신입니다.";
-                    mainText.className = "text-2xl font-black mb-2 leading-tight tracking-tight text-red-600 transition-all";
-                    subText.innerText = "아래 연락처로 즉시 전화해 주세요.";
-                    subText.className = "text-sm font-bold text-red-500 animate-pulse transition-all";
-                    guideText.className = "flex items-center mb-5 text-[13px] font-black text-red-600 transition-all";
-                    locHighlight.className = "text-red-600 font-bold transition-all";
-                } else {
-                    headerTitle.className = "text-lg font-bold text-gray-900 transition-all";
-                    card.className = "w-full mb-10 text-center rounded-[2.5rem] p-10 transition-all border border-gray-200 bg-white shadow-sm";
-                    emoji.innerText = "🏠";
-                    mainText.innerHTML = "마중 안심밴드를 착용한<br>어르신입니다.";
-                    mainText.className = "text-2xl font-black mb-2 leading-tight tracking-tight text-gray-900 transition-all";
-                    subText.innerText = "정보 확인이 필요하면 아래 버튼을 눌러주세요.";
-                    subText.className = "text-sm font-medium text-gray-500 transition-all";
-                    guideText.className = "flex items-center mb-5 text-[13px] font-bold text-blue-600 transition-all";
-                    locHighlight.className = "text-blue-600 font-bold transition-all";
-                }
                 
+                emoji.classList.remove('opacity-0');
+                if (isMissing) {
+                    emoji.innerText = "🚨";
+                    mainText.innerHTML = "실종 신고가 등록된<br>어르신입니다.";
+                    mainText.className = "text-2xl font-black mb-2 leading-tight text-red-600";
+                } else {
+                    emoji.innerText = "😊";
+                    mainText.innerHTML = "마중 안심밴드를 착용한<br>어르신입니다.";
+                    mainText.className = "text-2xl font-black mb-2 leading-tight text-gray-900";
+                }
                 document.getElementById('call-guardian').href = `tel:${data.guardian_phone}`;
                 document.getElementById('btn-info').onclick = () => location.href = `info.html?id=${elderId}`;
             }
