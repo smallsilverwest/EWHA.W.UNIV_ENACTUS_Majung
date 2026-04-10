@@ -35,22 +35,23 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
+        // 1. Firebase 설정
         const firebaseConfig = {
-          apiKey: "AIzaSyARCEpqFrnnCg6bbDzC7etXK_Ypnyc_1yY",
-          authDomain: "safeloop-majung.firebaseapp.com",
-          projectId: "safeloop-majung",
-          storageBucket: "safeloop-majung.firebasestorage.app",
-          messagingSenderId: "1031230129161",
-          appId: "1:1031230129161:web:5d164644d2a9857f5aa4d8",
-          measurementId: "G-KPX19HQ2JG"
+            apiKey: "AIzaSyARCEpqFrnnCg6bbDzC7etXK_Ypnyc_1yY",
+            projectId: "safeloop-majung"
+            // ... 나머지 설정 동일
         };
-    
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
     
+        // 2. ID 추출 및 뒤로가기 설정
         const urlParams = new URLSearchParams(window.location.search);
         const elderId = urlParams.get('id') || "demo"; 
-        document.getElementById('btn-back').onclick = () => location.href = `index.html?id=${elderId}`;
+        
+        // 뒤로 가기 시 ID 유지
+        document.getElementById('btn-back').onclick = () => {
+            location.href = `index.html?id=${elderId}`;
+        };
     
         async function loadData() {
             const docRef = doc(db, "Users", elderId);
@@ -59,18 +60,20 @@
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 
-                // 데이터 렌더링 (문법 오류 수정 및 데이터 연결)
-                document.getElementById('name').innerText = data.name; // 따옴표 오류 수정
+                // 데이터 매핑 (Firebase 필드명 기준)
+                document.getElementById('name').innerText = data.name;
                 document.getElementById('age-gender').innerText = `${data.age}세 (${data.gender})`;
-                document.getElementById('address').innerText = data.address || "-";
-                document.getElementById('police').innerText = data.police_loc || "-";
-                document.getElementById('center').innerText = data.center_loc || "-";
+                document.getElementById('address').innerText = data.address || "등록된 주소가 없습니다.";
+                document.getElementById('police').innerText = data.police_loc || "정보 없음";
+                document.getElementById('center').innerText = data.center_loc || "정보 없음";
                 
-                // 전화 걸기 링크 연결
+                // 전화번호 연결 (tel: 프로토콜)
                 document.getElementById('call-guardian').href = `tel:${data.guardian_phone}`;
                 document.getElementById('call-center').href = `tel:${data.center_phone}`;
             } else {
-                document.getElementById('name').innerText = "정보를 찾을 수 없습니다.";
+                // 데이터가 없는 경우
+                document.getElementById('name').innerText = "등록되지 않은 사용자";
+                document.getElementById('name').classList.add('text-red-500');
             }
         }
         loadData();
