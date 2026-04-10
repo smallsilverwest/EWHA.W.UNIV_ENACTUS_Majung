@@ -12,29 +12,7 @@
 </head>
 <body class="bg-gray-50 flex justify-center text-gray-800 font-sans">
     
-    <div id="auth-screen" class="w-full max-w-md min-h-screen bg-white flex flex-col relative">
-        <div class="flex items-center px-6 py-4 border-b">
-            <button onclick="location.href='index.html'" class="text-2xl mr-4 text-gray-600 active:scale-90 transition-transform">←</button>
-            <h1 class="text-lg font-bold">보호자 관리</h1>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center p-8">
-            <div class="text-5xl mb-4">🔐</div>
-            <h2 class="text-xl font-bold mb-1">보호자 로그인</h2>
-            <p class="text-gray-400 text-sm mb-8">PIN을 입력하세요</p>
-            
-            <input id="pin-input" type="password" maxlength="4" 
-                class="w-full border-2 rounded-2xl p-4 text-center text-2xl mb-4 focus:border-orange-500 outline-none transition-all" 
-                placeholder="PIN 4자리">
-            
-            <button id="btn-login" 
-                class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold mb-4 active:scale-95 transition-all shadow-md">
-                로그인
-            </button>
-        </div>
-    </div>
-
-    <div id="admin-main" class="hidden w-full max-w-md min-h-screen bg-white shadow-lg flex flex-col relative overflow-hidden">
+    <div id="admin-main" class="w-full max-w-md min-h-screen bg-white shadow-lg flex flex-col relative overflow-hidden">
         <div class="flex justify-between items-center px-6 py-4 border-b">
             <h1 class="text-lg font-bold">보호자 관리</h1>
             <button id="btn-logout" class="bg-gray-100 px-3 py-1 rounded-lg text-gray-600 text-sm font-bold active:scale-95">홈으로</button>
@@ -53,7 +31,7 @@
                     <h2 id="status-title" class="text-2xl font-bold mb-1">정상 상태</h2>
                     <p id="last-update" class="text-gray-400 text-[11px]">마지막 업데이트: -</p>
                 </div>
-                <button id="toggle-btn" class="w-full py-5 rounded-3xl font-black text-xl shadow-lg active:scale-95 mb-8"></button>
+                <button id="toggle-btn" class="w-full py-5 rounded-3xl font-black text-xl shadow-lg active:scale-95 mb-3"></button>
                 <div class="bg-yellow-50 border border-yellow-100 rounded-2xl p-5 text-[12px] text-yellow-700 leading-relaxed font-medium">
                     실종 신고 등록 시 NFC 태깅 페이지 상단에 실종 알림 배너가 표시됩니다.
                 </div>
@@ -65,11 +43,11 @@
                     <div class="flex-1"><label class="text-xs text-gray-500 font-bold mb-1 block">성별</label><select id="info-gender" class="w-full border rounded-2xl p-4 bg-gray-50"><option value="남">남</option><option value="여">여</option></select></div>
                     <div class="flex-1"><label class="text-xs text-gray-500 font-bold mb-1 block">나이</label><input id="info-age" type="number" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
                 </div>
-                <div><label class="text-s text-gray-500 font-bold mb-1 block">주소</label><input id="info-address" type="text" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
-                <div><label class="text-s text-gray-500 font-bold mb-1 block">관할 경찰서</label><input id="info-police" type="text" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
-                <div><label class="text-s text-gray-500 font-bold mb-1 block">등록 센터</label><input id="info-center" type="text" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
-                <div><label class="text-s text-gray-500 font-bold mb-1 block">보호자 연락처</label><input id="info-guardian-phone" type="tel" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
-                <div><label class="text-s text-gray-500 font-bold mb-1 block">센터 연락처</label><input id="info-center-phone" type="tel" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
+                <div><label class="text-xs text-gray-500 font-bold mb-1 block">주소</label><input id="info-address" type="text" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
+                <div><label class="text-xs text-gray-500 font-bold mb-1 block">관할 경찰서</label><input id="info-police" type="text" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
+                <div><label class="text-xs text-gray-500 font-bold mb-1 block">등록 센터</label><input id="info-center" type="text" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
+                <div><label class="text-xs text-gray-500 font-bold mb-1 block">보호자 연락처</label><input id="info-guardian-phone" type="tel" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
+                <div><label class="text-xs text-gray-500 font-bold mb-1 block">센터 연락처</label><input id="info-center-phone" type="tel" class="w-full border rounded-2xl p-4 bg-gray-50"></div>
                 <button id="btn-save-info" class="w-full bg-orange-500 text-white py-5 rounded-3xl font-black text-lg shadow-lg active:scale-95 transition-all mt-4">저장하기</button>
             </div>
 
@@ -100,19 +78,16 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         const urlParams = new URLSearchParams(window.location.search);
         const elderId = urlParams.get('id') || "elder01";
         const docRef = doc(db, "elders", elderId);
 
         let currentStatus = false;
-        let correctPin = "";
 
         onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 currentStatus = data.isMissing;
-                correctPin = data.pin || "0000";
                 updateStatusUI(data);
                 
                 document.getElementById('info-name').value = data.name || "";
@@ -123,17 +98,8 @@
                 document.getElementById('info-center').value = data.center_loc || "";
                 document.getElementById('info-guardian-phone').value = data.guardian_phone || "";
                 document.getElementById('info-center-phone').value = data.center_phone || "";
-                document.getElementById('pin-hint').innerText = `초기 PIN: ${correctPin === "0000" ? "0000" : "****"}`;
             }
         });
-
-        document.getElementById('btn-login').onclick = () => {
-            const input = document.getElementById('pin-input').value;
-            if (input === correctPin) {
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('admin-main').classList.remove('hidden');
-            } else { alert("PIN이 틀렸습니다."); }
-        };
 
         document.getElementById('btn-logout').onclick = () => location.href = `index.html?id=${elderId}`;
 
@@ -154,12 +120,14 @@
                 card.className = "w-full mb-6 text-center border border-red-100 bg-red-50 rounded-[2rem] p-10 shadow-sm mt-4";
                 title.innerText = "실종 신고 접수됨"; title.className = "text-2xl font-bold mb-1 text-red-600";
                 icon.innerText = "🚨";
-                btn.innerText = "실종 신고 해제하기"; btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-emerald-500 text-white active:scale-95 mb-4";
+                btn.innerText = "실종 신고 해제하기"; 
+                btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-emerald-500 text-white active:scale-95 mb-3";
             } else {
                 card.className = "w-full mb-6 text-center border border-emerald-100 bg-emerald-50 rounded-[2rem] p-10 shadow-sm mt-4";
                 title.innerText = "정상 상태"; title.className = "text-2xl font-bold mb-1 text-emerald-600";
                 icon.innerText = "✅";
-                btn.innerText = "실종 신고 등록하기"; btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-red-600 text-white active:scale-95 mb-4";
+                btn.innerText = "실종 신고 등록하기"; 
+                btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-red-600 text-white active:scale-95 mb-3";
             }
         }
 
