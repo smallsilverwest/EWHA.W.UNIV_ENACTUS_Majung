@@ -30,39 +30,51 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // 1. 필요한 Firebase 함수 임포트
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBphUEAQmK1XXYnNcQYK5NEOFDfxleNaAQ",
-            authDomain: "majung-260402v1.firebaseapp.com",
-            projectId: "majung-260402v1",
-            storageBucket: "majung-260402v1.firebasestorage.app",
-            messagingSenderId: "18043440169",
-            appId: "1:18043440169:web:f5f131e3fa0426ef126038",
-            measurementId: "G-4CHSF7NFGR"
-        };
+    // 2. 최신 Firebase 설정값 적용 (safeloop-majung 프로젝트)
+    const firebaseConfig = {
+        apiKey: "AIzaSyARCEpqFrnnCg6bbDzC7etXK_Ypnyc_1yY",
+        authDomain: "safeloop-majung.firebaseapp.com",
+        projectId: "safeloop-majung",
+        storageBucket: "safeloop-majung.firebasestorage.app",
+        messagingSenderId: "1031230129161",
+        appId: "1:1031230129161:web:5d164644d2a9857f5aa4d8",
+        measurementId: "G-KPX19HQ2JG"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const urlParams = new URLSearchParams(window.location.search);
-        const elderId = urlParams.get('id') || "elder01";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        document.getElementById('btn-login').onclick = async () => {
-            const inputPin = document.getElementById('pin-input').value;
-            const docRef = doc(db, "elders", elderId);
-            const docSnap = await getDoc(docRef);
+    // 3. URL 파라미터에서 ID 추출 (기본값 'demo')
+    const urlParams = new URLSearchParams(window.location.search);
+    const elderId = urlParams.get('id') || "demo";
 
-            if (docSnap.exists()) {
-                const correctPin = docSnap.data().pin || "0000";
-                if (inputPin === correctPin) {
-                    // 로그인 성공 시 관리 페이지로 이동 (id값 전달)
-                    location.href = `admin.html?id=${elderId}`;
-                } else {
-                    alert("PIN이 틀렸습니다.");
-                }
+    // 4. 로그인 버튼 클릭 이벤트
+    document.getElementById('btn-login').onclick = async () => {
+        const inputPin = document.getElementById('pin-input').value;
+        
+        // 'Users' 컬렉션의 elderId(demo) 문서 참조
+        const docRef = doc(db, "Users", elderId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const correctPin = data.pin || "0000"; // DB에 설정된 PIN (없으면 기본 0000)
+
+            if (inputPin === correctPin) {
+                // 로그인 성공 시 관리 페이지(admin.html)로 이동하며 ID 전달
+                location.href = `admin.html?id=${elderId}`;
+            } else {
+                alert("PIN이 틀렸습니다. 다시 확인해 주세요.");
+                document.getElementById('pin-input').value = ""; // 입력창 초기화
             }
-        };
-    </script>
+        } else {
+            alert("사용자 정보를 찾을 수 없습니다.");
+        }
+    };
+</script>
 </body>
 </html>
