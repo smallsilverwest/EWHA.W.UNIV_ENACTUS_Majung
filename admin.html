@@ -63,110 +63,129 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBphUEAQmK1XXYnNcQYK5NEOFDfxleNaAQ",
-            authDomain: "majung-260402v1.firebaseapp.com",
-            projectId: "majung-260402v1",
-            storageBucket: "majung-260402v1.firebasestorage.app",
-            messagingSenderId: "18043440169",
-            appId: "1:18043440169:web:f5f131e3fa0426ef126038",
-            measurementId: "G-4CHSF7NFGR"
-        };
+    // 1. safeloop-majung 프로젝트 설정 적용
+    const firebaseConfig = {
+        apiKey: "AIzaSyARCEpqFrnnCg6bbDzC7etXK_Ypnyc_1yY",
+        authDomain: "safeloop-majung.firebaseapp.com",
+        projectId: "safeloop-majung",
+        storageBucket: "safeloop-majung.firebasestorage.app",
+        messagingSenderId: "1031230129161",
+        appId: "1:1031230129161:web:5d164644d2a9857f5aa4d8",
+        measurementId: "G-KPX19HQ2JG"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const urlParams = new URLSearchParams(window.location.search);
-        const elderId = urlParams.get('id') || "elder01";
-        const docRef = doc(db, "elders", elderId);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        let currentStatus = false;
+    // 2. URL 파라미터에서 ID 추출 (기본값 'demo')
+    const urlParams = new URLSearchParams(window.location.search);
+    const elderId = urlParams.get('id') || "demo"; 
+    const docRef = doc(db, "Users", elderId); // 'Users' 컬렉션 참조
 
-        onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                currentStatus = data.isMissing;
-                updateStatusUI(data);
+    let currentStatus = false;
 
-                document.getElementById('info-name').value = data.name || "";
-                document.getElementById('info-gender').value = data.gender || "남";
-                document.getElementById('info-age').value = data.age || "";
-                document.getElementById('info-address').value = data.address || "";
-                document.getElementById('info-police').value = data.police_loc || "";
-                document.getElementById('info-center').value = data.center_loc || "";
-                document.getElementById('info-guardian-phone').value = data.guardian_phone || "";
-                document.getElementById('info-center-phone').value = data.center_phone || "";
-            }
-        });
+    // 3. 실시간 데이터 감시 및 UI 업데이트
+    onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            currentStatus = data.isMissing;
+            updateStatusUI(data);
 
-        document.getElementById('btn-logout').onclick = () => location.href = `index.html?id=${elderId}`;
-
-        document.getElementById('toggle-btn').onclick = async () => {
-            const now = new Date().toLocaleString('ko-KR', { hour12: true });
-            await updateDoc(docRef, { isMissing: !currentStatus, lastUpdate: now });
-        };
-
-        function updateStatusUI(data) {
-            const card = document.getElementById('status-card');
-            const title = document.getElementById('status-title');
-            const icon = document.getElementById('status-icon');
-            const btn = document.getElementById('toggle-btn');
-            const time = document.getElementById('last-update');
-            time.innerText = `마지막 업데이트: ${data.lastUpdate || '-'}`;
-
-            if (data.isMissing) {
-                card.className = "w-full mb-6 text-center border border-red-100 bg-red-50 rounded-[2rem] p-10 shadow-sm mt-4";
-                title.innerText = "실종 신고 접수됨"; title.className = "text-2xl font-bold mb-1 text-red-600";
-                icon.innerText = "🚨";
-                btn.innerText = "실종 신고 해제하기"; 
-                btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-emerald-500 text-white active:scale-95 mb-4";
-            } else {
-                card.className = "w-full mb-6 text-center border border-emerald-100 bg-emerald-50 rounded-[2rem] p-10 shadow-sm mt-4";
-                title.innerText = "정상 상태"; title.className = "text-2xl font-bold mb-1 text-emerald-600";
-                icon.innerText = "✅";
-                btn.innerText = "실종 신고 등록하기"; 
-                btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-red-600 text-white active:scale-95 mb-4";
-            }
+            // 어르신 정보 탭 필드 채우기 (이미지 속 필드명과 일치)
+            document.getElementById('info-name').value = data.name || "";
+            document.getElementById('info-gender').value = data.gender || "남";
+            document.getElementById('info-age').value = data.age || "";
+            document.getElementById('info-address').value = data.address || "";
+            document.getElementById('info-police').value = data.police_loc || "";
+            document.getElementById('info-center').value = data.center_loc || "";
+            document.getElementById('info-guardian-phone').value = data.guardian_phone || "";
+            document.getElementById('info-center-phone').value = data.center_phone || "";
         }
+    });
 
-        document.getElementById('btn-save-info').onclick = async () => {
-            await updateDoc(docRef, {
-                name: document.getElementById('info-name').value,
-                gender: document.getElementById('info-gender').value,
-                age: document.getElementById('info-age').value,
-                address: document.getElementById('info-address').value,
-                police_loc: document.getElementById('info-police').value,
-                center_loc: document.getElementById('info-center').value,
-                guardian_phone: document.getElementById('info-guardian-phone').value,
-                center_phone: document.getElementById('info-center-phone').value
-            });
-            alert("저장되었습니다.");
-        };
+    // 홈으로 이동 (ID 유지)
+    document.getElementById('btn-logout').onclick = () => location.href = `index.html?id=${elderId}`;
 
-        window.switchTab = (tab) => {
-            ['missing', 'info', 'pin'].forEach(t => {
-                document.getElementById(`content-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).classList.remove('tab-active');
-            });
-            document.getElementById(`content-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).classList.add('tab-active');
-        };
+    // 4. 실종 상태 토글 (isMissing 업데이트)
+    document.getElementById('toggle-btn').onclick = async () => {
+        const now = new Date().toLocaleString('ko-KR', { hour12: true });
+        await updateDoc(docRef, { 
+            isMissing: !currentStatus, 
+            lastUpdate: now 
+        });
+    };
 
-        const nPin = document.getElementById('new-pin');
-        const cPin = document.getElementById('confirm-pin');
-        const pBtn = document.getElementById('btn-change-pin');
-        const valPin = () => {
-            const ok = nPin.value.length === 4 && nPin.value === cPin.value;
-            pBtn.disabled = !ok;
-            pBtn.className = ok ? "w-full bg-orange-500 text-white py-5 rounded-3xl font-black text-lg shadow-lg active:scale-95" : "w-full bg-gray-300 text-white py-5 rounded-3xl font-black text-lg shadow-sm cursor-not-allowed";
-        };
-        nPin.oninput = valPin; cPin.oninput = valPin;
-        pBtn.onclick = async () => {
-            await updateDoc(docRef, { pin: nPin.value });
-            alert("PIN이 변경되었습니다."); nPin.value = ""; cPin.value = ""; valPin();
-        };
-    </script>
+    // 상태에 따른 UI 변경 함수
+    function updateStatusUI(data) {
+        const card = document.getElementById('status-card');
+        const title = document.getElementById('status-title');
+        const icon = document.getElementById('status-icon');
+        const btn = document.getElementById('toggle-btn');
+        const time = document.getElementById('last-update');
+        time.innerText = `마지막 업데이트: ${data.lastUpdate || '-'}`;
+
+        if (data.isMissing) {
+            card.className = "w-full mb-6 text-center border border-red-100 bg-red-50 rounded-[2rem] p-10 shadow-sm mt-4";
+            title.innerText = "실종 신고 접수됨"; title.className = "text-2xl font-bold mb-1 text-red-600";
+            icon.innerText = "🚨";
+            btn.innerText = "실종 신고 해제하기"; 
+            btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-emerald-500 text-white active:scale-95 mb-4";
+        } else {
+            card.className = "w-full mb-6 text-center border border-emerald-100 bg-emerald-50 rounded-[2rem] p-10 shadow-sm mt-4";
+            title.innerText = "정상 상태"; title.className = "text-2xl font-bold mb-1 text-emerald-600";
+            icon.innerText = "✅";
+            btn.innerText = "실종 신고 등록하기"; 
+            btn.className = "w-full py-5 rounded-3xl font-black text-xl shadow-lg bg-red-600 text-white active:scale-95 mb-4";
+        }
+    }
+
+    // 5. 어르신 정보 저장 (수정 기능)
+    document.getElementById('btn-save-info').onclick = async () => {
+        await updateDoc(docRef, {
+            name: document.getElementById('info-name').value,
+            gender: document.getElementById('info-gender').value,
+            age: Number(document.getElementById('info-age').value), // 숫자로 저장
+            address: document.getElementById('info-address').value,
+            police_loc: document.getElementById('info-police').value,
+            center_loc: document.getElementById('info-center').value,
+            guardian_phone: document.getElementById('info-guardian-phone').value,
+            center_phone: document.getElementById('info-center-phone').value
+        });
+        alert("정보가 성공적으로 저장되었습니다.");
+    };
+
+    // 탭 전환 로직 (기존 유지)
+    window.switchTab = (tab) => {
+        ['missing', 'info', 'pin'].forEach(t => {
+            document.getElementById(`content-${t}`).classList.add('hidden');
+            document.getElementById(`tab-${t}`).classList.remove('tab-active');
+        });
+        document.getElementById(`content-${tab}`).classList.remove('hidden');
+        document.getElementById(`tab-${tab}`).classList.add('tab-active');
+    };
+
+    // 6. PIN 변경 로직
+    const nPin = document.getElementById('new-pin');
+    const cPin = document.getElementById('confirm-pin');
+    const pBtn = document.getElementById('btn-change-pin');
+    
+    const valPin = () => {
+        const ok = nPin.value.length === 4 && nPin.value === cPin.value;
+        pBtn.disabled = !ok;
+        pBtn.className = ok ? "w-full bg-orange-500 text-white py-5 rounded-3xl font-black text-lg shadow-lg active:scale-95" : "w-full bg-gray-300 text-white py-5 rounded-3xl font-black text-lg shadow-sm cursor-not-allowed";
+    };
+
+    nPin.oninput = valPin; 
+    cPin.oninput = valPin;
+
+    pBtn.onclick = async () => {
+        await updateDoc(docRef, { pin: nPin.value });
+        alert("PIN이 변경되었습니다."); 
+        nPin.value = ""; cPin.value = ""; valPin();
+    };
+</script>>
 </body>
 </html>
