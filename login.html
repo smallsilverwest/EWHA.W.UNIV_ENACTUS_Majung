@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마중 - 보호자 로그인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-200 flex justify-center text-gray-800 font-sans">
+    <div id="auth-screen" class="w-full max-w-md min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
+        <div class="flex items-center px-6 py-4 border-b">
+            <button onclick="location.href='index.html'" class="text-2xl mr-4 text-gray-600 active:scale-90 transition-transform">←</button>
+            <h1 class="text-lg font-bold">보호자 관리</h1>
+        </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center p-8">
+            <div class="text-5xl mb-4">🔐</div>
+            <h2 class="text-xl font-bold mb-1">보호자 로그인</h2>
+            <p class="text-gray-400 text-sm mb-8">PIN을 입력하세요</p>
+
+            <input id="pin-input" type="password" maxlength="4" 
+                class="w-full border-2 rounded-2xl p-4 text-center text-2xl mb-4 focus:border-orange-500 outline-none transition-all" 
+                placeholder="PIN 4자리">
+
+            <button id="btn-login" 
+                class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold mb-4 active:scale-95 transition-all shadow-md">
+                로그인
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+    // 1. 필요한 Firebase 함수 임포트
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 2. 최신 Firebase 설정값 적용 (safeloop-majung 프로젝트)
+    const firebaseConfig = {
+        apiKey: "AIzaSyARCEpqFrnnCg6bbDzC7etXK_Ypnyc_1yY",
+        authDomain: "safeloop-majung.firebaseapp.com",
+        projectId: "safeloop-majung",
+        storageBucket: "safeloop-majung.firebasestorage.app",
+        messagingSenderId: "1031230129161",
+        appId: "1:1031230129161:web:5d164644d2a9857f5aa4d8",
+        measurementId: "G-KPX19HQ2JG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 3. URL 파라미터에서 ID 추출 (기본값 'demo')
+    const urlParams = new URLSearchParams(window.location.search);
+    const elderId = urlParams.get('id') || "demo";
+
+    // 4. 로그인 버튼 클릭 이벤트
+    document.getElementById('btn-login').onclick = async () => {
+        const inputPin = document.getElementById('pin-input').value;
+        
+        // 'Users' 컬렉션의 elderId(demo) 문서 참조
+        const docRef = doc(db, "Users", elderId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const correctPin = data.pin || "0000"; // DB에 설정된 PIN (없으면 기본 0000)
+
+            if (inputPin === correctPin) {
+                // 로그인 성공 시 관리 페이지(admin.html)로 이동하며 ID 전달
+                location.href = `admin.html?id=${elderId}`;
+            } else {
+                alert("PIN이 틀렸습니다. 다시 확인해 주세요.");
+                document.getElementById('pin-input').value = ""; // 입력창 초기화
+            }
+        } else {
+            alert("사용자 정보를 찾을 수 없습니다.");
+        }
+    };
+</script>
+</body>
+</html>
